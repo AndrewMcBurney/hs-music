@@ -5,12 +5,23 @@
 -- @author: Andrew McBurney
 --------------------------------------------------------------------------------
 
+-- Open applescript and store in string context
+local file, err = io.open ("./hs-music/album.applescript", "r")
+local applescript_string = ""
+
+-- Try to open the applescript file
+if file == nil then
+  print("Couldn't open file: " .. err)
+else
+  applescript_string = file:read("*all")
+  file:close()
+end
+
 -- Mash for iTunes and Spotify
 local iTunesMash  = {"cmd", "alt", "shift"}
 local spotifyMash = {"cmd", "ctrl", "shift"}
 
 -- Images for notifications
-local iTunesImage  = hs.image.imageFromPath("./hs-music/images/iTunes.png")
 local spotifyImage = hs.image.imageFromPath("./hs-music/images/spotify.png")
 
 -- Notify the user what song is playing
@@ -35,21 +46,32 @@ local function iTunesTrackInfo()
   }
 end
 
+-- Executes applescript to write current album cover to file from raw bytes
+local function iTunesImage()
+  ok = hs.osascript.applescript(applescript_string)
+
+  if (ok) then
+    return hs.image.imageFromPath("~/Music/album_artwork.jpg")
+  else
+    return hs.image.imageFromPath("./hs-music/images/iTunes.png")
+  end
+end
+
 -- Display current track information in a hammerspoon notification
 local function iDisplayTrackInfo()
-  notifySong(iTunesTrackInfo(), iTunesImage, "")
+  notifySong(iTunesTrackInfo(), iTunesImage(), "")
 end
 
 -- Display track being played
 local function iPlayTrack()
   hs.itunes.play()
-  notifySong(iTunesTrackInfo(), iTunesImage, "Playing song: ")
+  notifySong(iTunesTrackInfo(), iTunesImage(), "Playing song: ")
 end
 
 -- Display track being played
 local function iPauseTrack()
   hs.itunes.pause()
-  notifySong(iTunesTrackInfo(), iTunesImage, "Pausing song: ")
+  notifySong(iTunesTrackInfo(), iTunesImage(), "Pausing song: ")
 end
 
 -- iTunes Keybindings
@@ -111,11 +133,11 @@ local function audioDeviceWatch(uid, eventName, eventScope, eventElement)
     if device:jackConnected() then
       if musicPlaying then
         hs.itunes.play()
-        notifyJackState("Headphones plugged in", "Resume music.", iTunesImage)
+        notifyJackState("Headphones plugged in", "Resume music.", iTunesImage())
       end
     elseif hs.itunes.isPlaying() then
       hs.itunes.pause()
-      notifyJackState("Headphones unplugged", "Pausing music.", iTunesImage)
+      notifyJackState("Headphones unplugged", "Pausing music.", iTunesImage())
       musicPlaying = true
     end
   end
