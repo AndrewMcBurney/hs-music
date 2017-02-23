@@ -27,8 +27,8 @@ local spotifyImage = hs.image.imageFromPath("./hs-music/images/spotify.png")
 -- Notify the user what song is playing
 local function notifySong(songInfo, image, additionalInfo)
   title = additionalInfo .. songInfo.track
-  info  = songInfo.album .. " - " .. songInfo.artist
-  hs.notify.new({title=title, informativeText=info, contentImage=image}):send()
+  info  = songInfo.album .. " | " .. songInfo.artist
+  hs.notify.new({title=title, informativeText=info}):setIdImage(image):send()
 end
 
 --------------------------------------------------------------------------------
@@ -122,7 +122,7 @@ hs.audiodevice.watcher.start()
 
 -- Notify the state of the headphone jack to user
 local function notifyJackState(title, text, image)
-  hs.notify.new({title=title, informativeText=text, contentImage=image}):send()
+  hs.notify.new({title=title, informativeText=text}):setIdImage(image):send()
 end
 
 -- Function which watches for changes in headphone jack state

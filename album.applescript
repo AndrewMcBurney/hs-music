@@ -1,7 +1,9 @@
+--------------------------------------------------------------------------------
+-- album.applescript
 --
--- album_artwork.scpt
--- A script which writes the current song's album artwork to .jpg or .png
---
+-- A script which writes the current song's album artwork to .jpg format from
+-- raw bytes
+--------------------------------------------------------------------------------
 
 -- Get the raw bytes for the current track artwork
 tell application "iTunes" to tell artwork 1 of current track
